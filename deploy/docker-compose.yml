@@ -1,0 +1,58 @@
+version: '3.8'
+
+services:
+  db_postgres:
+    image: postgres:15-alpine
+    container_name: pthttm_postgres
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: he_thong_hoc_tap
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ../database/init.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d he_thong_hoc_tap"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  web_portal:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.web
+    container_name: pthttm_web_portal
+    restart: always
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST: db_postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: he_thong_hoc_tap
+    ports:
+      - "8000:8000"
+    depends_on:
+      db_postgres:
+        condition: service_healthy
+
+  ml_pipeline:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile.ml
+    container_name: pthttm_ml_pipeline
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST: db_postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: he_thong_hoc_tap
+    depends_on:
+      db_postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:
+

@@ -1,0 +1,92 @@
+name: Quy Trinh CI CD MLOps va DevOps
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  kiem_thu_ma_nguon:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Khoi tao ma nguon
+        uses: actions/checkout@v4
+
+      - name: Cai dat Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Cai dat thu vien phu thuoc
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest flake8
+
+      - name: Kiem tra chat luong cu phap
+        run: |
+          python -m compileall data database ml_engine web_app
+
+      - name: Kiem tra tap du lieu giao duc
+        run: |
+          python -c "import pandas as pd; df = pd.read_csv('data/du_lieu_sinh_vien.csv'); assert len(df) >= 1000; assert 'trinh_do_hoc_tap' in df.columns"
+
+  mlops_kiem_dinh_mo_hinh:
+    needs: kiem_thu_ma_nguon
+    runs-on: ubuntu-latest
+    steps:
+      - name: Khoi tao ma nguon
+        uses: actions/checkout@v4
+
+      - name: Cai dat Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Cai dat thu vien
+        run: |
+          pip install -r requirements.txt
+
+      - name: Chay Pipeline Huan luyen va So sanh CLO1
+        run: |
+          python -m ml_engine.train_models
+          python -m ml_engine.evaluate_models
+
+      - name: Model Gatekeeper - Kiem tra nguong chat luong F1 Score
+        run: |
+          python -c "import json; data = json.load(open('ml_engine/models/ket_qua_so_sanh.json', encoding='utf-8')); best_f1 = data['chi_so_f1_cao_nhat']; print(f'F1 Score: {best_f1}'); assert best_f1 >= 0.85, 'Mo hinh khong dat nguong chat luong MLOps'"
+
+  dong_goi_va_trien_khai_swarm:
+    needs: mlops_kiem_dinh_mo_hinh
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Khoi tao ma nguon
+        uses: actions/checkout@v4
+
+      - name: Thiet lap Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Docker Image Web Portal
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deploy/Dockerfile.web
+          push: false
+          tags: pthttm-nhom05/web-portal:latest
+
+      - name: Build Docker Image ML Engine
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./deploy/Dockerfile.ml
+          push: false
+          tags: pthttm-nhom05/ml-engine:latest
+
+      - name: Kiem tra cau hinh Docker Stack Swarm
+        run: |
+          docker compose -f deploy/docker-compose.yml config
+

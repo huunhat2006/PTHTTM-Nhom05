@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Trang chủ - Hệ thống Gợi ý Lộ trình Học tập Sinh viên{% endblock %}
+
+{% block content %}
+<div class="hero-banner">
+    <div class="row align-items-center">
+        <div class="col-lg-8">
+            <span class="badge bg-white text-primary px-3 py-2 mb-3 fw-bold">Đề tài 13 - PTHTTM Nhóm 05</span>
+            <h1 class="display-5 fw-bold mb-3">Hệ thống Gợi ý Lộ trình Học tập & Phân loại Trình độ Sinh viên</h1>
+            <p class="lead mb-4">Nền tảng trí tuệ nhân tạo dự đoán kết quả học tập, cảnh báo sớm nguy cơ học vụ và đề xuất lộ trình học tập thích ứng cá nhân hóa cho sinh viên theo chuẩn quy trình DevOps & MLOps hiện đại.</p>
+            <div class="d-flex gap-3 flex-wrap">
+                <a href="/sinh-vien" class="btn btn-light btn-lg fw-bold px-4 text-primary"><i class="fa-solid fa-compass me-2"></i> Trải nghiệm Cổng Sinh viên</a>
+                <a href="/co-van" class="btn btn-outline-light btn-lg px-4"><i class="fa-solid fa-users-gear me-2"></i> Bảng điều khiển Cố vấn</a>
+                <a href="/mo-hinh-clo1" class="btn btn-warning btn-lg px-4 text-dark fw-bold"><i class="fa-solid fa-brain me-2"></i> So sánh Mô hình CLO1</a>
+            </div>
+        </div>
+        <div class="col-lg-4 text-center d-none d-lg-block">
+            <i class="fa-solid fa-network-wired display-1 text-white opacity-75"></i>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stat p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Tổng số sinh viên</span>
+                    <h3 class="fw-bold mb-0 text-primary">{{ tong_sv }}</h3>
+                    <small class="text-success"><i class="fa-solid fa-database me-1"></i> Cơ sở dữ liệu chuẩn hóa</small>
+                </div>
+                <div class="stat-icon bg-primary text-white">
+                    <i class="fa-solid fa-users"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stat p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Điểm GPA Trung bình</span>
+                    <h3 class="fw-bold mb-0 text-success">{{ gpa_trung_binh }} / 4.0</h3>
+                    <small class="text-muted">Học kỳ hiện tại</small>
+                </div>
+                <div class="stat-icon bg-success text-white">
+                    <i class="fa-solid fa-chart-column"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stat p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Xuất sắc & Giỏi</span>
+                    <h3 class="fw-bold mb-0 text-info">{{ sv_xuat_sac + sv_gioi }}</h3>
+                    <small class="text-info fw-bold">{{ ((sv_xuat_sac + sv_gioi) / tong_sv * 100) | round(1) }}% tổng sinh viên</small>
+                </div>
+                <div class="stat-icon bg-info text-white">
+                    <i class="fa-solid fa-award"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="card card-stat p-3 bg-white">
+            <div class="d-flex align-items-center justify-content-between">
+                <div>
+                    <span class="text-muted small text-uppercase fw-bold">Cảnh báo học vụ</span>
+                    <h3 class="fw-bold mb-0 text-danger">{{ sv_canh_bao }}</h3>
+                    <small class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Cần can thiệp sớm</small>
+                </div>
+                <div class="stat-icon bg-danger text-white">
+                    <i class="fa-solid fa-bell"></i>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-7">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-cubes-stacked text-primary me-2"></i> Kiến trúc Hệ thống & Quy trình DevOps / MLOps</h5>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-light">
+                        <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-microchip me-2"></i> Trí tuệ nhân tạo (CLO1)</h6>
+                        <ul class="list-unstyled mb-0 small text-secondary">
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> So sánh 3 mô hình học máy: Decision Tree, XGBoost, K-Means + Phân loại.</li>
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> XGBoost đạt F1-Score vượt trội 0.985 trên dữ liệu giáo dục.</li>
+                            <li><i class="fa-solid fa-check text-success me-1"></i> Phân loại 5 cấp độ trình độ kèm gợi ý lộ trình thích ứng.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-light">
+                        <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-gears me-2"></i> Quy trình MLOps Khép kín</h6>
+                        <ul class="list-unstyled mb-0 small text-secondary">
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Pipeline tự động nạp dữ liệu, tiền xử lý và chuẩn hóa.</li>
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Model Gatekeeping: Tự động đánh giá F1 > 0.85 trước khi đóng gói.</li>
+                            <li><i class="fa-solid fa-check text-success me-1"></i> Lưu vết mô hình, theo dõi độ trễ suy luận thời gian thực.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-light">
+                        <h6 class="fw-bold text-warning mb-2"><i class="fa-solid fa-docker me-2"></i> Triển khai Docker Swarm (CLO2)</h6>
+                        <ul class="list-unstyled mb-0 small text-secondary">
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Cụm phân tán Docker Swarm đa dịch vụ (Web, ML API, PostgreSQL).</li>
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Auto-scaling động dựa trên tải CPU & số lượng truy vấn.</li>
+                            <li><i class="fa-solid fa-check text-success me-1"></i> Rolling update không thời gian chết (Zero-downtime deployment).</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="p-3 border rounded bg-light">
+                        <h6 class="fw-bold text-info mb-2"><i class="fa-solid fa-code-branch me-2"></i> Tự động hóa CI/CD Pipeline</h6>
+                        <ul class="list-unstyled mb-0 small text-secondary">
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Tự động kiểm tra chất lượng mã nguồn và unit test.</li>
+                            <li class="mb-1"><i class="fa-solid fa-check text-success me-1"></i> Tự động kiểm thử dữ liệu giáo dục và kiểm định mô hình ML.</li>
+                            <li><i class="fa-solid fa-check text-success me-1"></i> Tự động build Docker Image và phát hành phiên bản mới lên cluster.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-chart-pie text-primary me-2"></i> Phân bổ Trình độ Học tập Sinh viên</h5>
+            <div style="position: relative; height: 260px;">
+                <canvas id="bieuDoPhanBoTrinhDo"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctx = document.getElementById('bieuDoPhanBoTrinhDo').getContext('2d');
+new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Xuất sắc', 'Giỏi', 'Khá', 'Trung bình', 'Nguy cơ cảnh báo'],
+        datasets: [{
+            data: [{{ sv_xuat_sac }}, {{ sv_gioi }}, {{ sv_kha }}, {{ sv_trung_binh }}, {{ sv_canh_bao }}],
+            backgroundColor: ['#0e9f6e', '#3f83f8', '#f59e0b', '#f98080', '#e02424'],
+            borderWidth: 2,
+            borderColor: '#ffffff'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            }
+        }
+    }
+});
+</script>
+{% endblock %}
+

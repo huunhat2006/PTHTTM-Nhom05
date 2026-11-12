@@ -1,0 +1,98 @@
+version: '3.8'
+
+services:
+  db_postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_DB: he_thong_hoc_tap
+    volumes:
+      - postgres_swarm_data:/var/lib/postgresql/data
+    networks:
+      - pthttm_network
+    deploy:
+      replicas: 1
+      placement:
+        constraints:
+          - node.role == manager
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  web_portal:
+    image: pthttm-nhom05/web-portal:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST: db_postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: he_thong_hoc_tap
+    ports:
+      - target: 8000
+        published: 8000
+        mode: ingress
+    networks:
+      - pthttm_network
+    deploy:
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 10s
+        failure_action: rollback
+        order: start-first
+      rollback_config:
+        parallelism: 1
+        delay: 5s
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
+        reservations:
+          cpus: '0.15'
+          memory: 128M
+
+  ml_api:
+    image: pthttm-nhom05/ml-engine:latest
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres123
+      POSTGRES_HOST: db_postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: he_thong_hoc_tap
+    networks:
+      - pthttm_network
+    deploy:
+      replicas: 2
+      update_config:
+        parallelism: 1
+        delay: 15s
+        order: start-first
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1024M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+networks:
+  pthttm_network:
+    driver: overlay
+
+volumes:
+  postgres_swarm_data:
+    driver: local
+

@@ -1,0 +1,161 @@
+{
+  "nhan_lop": [
+    "Nguy cơ cảnh báo",
+    "Trung bình",
+    "Khá",
+    "Giỏi",
+    "Xuất sắc"
+  ],
+  "dac_trung": [
+    "Điểm GPA tích lũy",
+    "Điểm chuyên cần",
+    "Điểm kiểm tra giữa kỳ",
+    "Điểm bài tập lớn/đồ án",
+    "Số giờ học mỗi tuần",
+    "Tỷ lệ điểm danh (%)",
+    "Số lần tương tác LMS",
+    "Số bài tập nộp đúng hạn",
+    "Số câu hỏi trên diễn đàn"
+  ],
+  "ma_tran_nham_lan_xgboost": [
+    [
+      30,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      49,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      109,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      82,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      30
+    ]
+  ],
+  "ma_tran_nham_lan_decision_tree": [
+    [
+      30,
+      0,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      49,
+      0,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      109,
+      0,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      82,
+      0
+    ],
+    [
+      0,
+      0,
+      0,
+      0,
+      30
+    ]
+  ],
+  "tam_quan_trong_xgboost": [
+    0.47293832898139954,
+    0.517654538154602,
+    0.0017309488030150533,
+    0.0019588025752454996,
+    0.001416725222952664,
+    0.0006802074494771659,
+    0.0017958898097276688,
+    0.0009925258345901966,
+    0.0008320900378748775
+  ],
+  "tam_quan_trong_decision_tree": [
+    0.8352457265288051,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.0,
+    0.1647542734711949,
+    0.0,
+    0.0
+  ],
+  "bao_cao_chi_tiet_xgboost": {
+    "Nguy cơ cảnh báo": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "Trung bình": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 49.0
+    },
+    "Khá": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 109.0
+    },
+    "Giỏi": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 82.0
+    },
+    "Xuất sắc": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 30.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 300.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 300.0
+    }
+  }
+}

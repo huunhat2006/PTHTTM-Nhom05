@@ -1,0 +1,193 @@
+{% extends "base.html" %}
+
+{% block title %}Cổng Thông tin Sinh viên - Gợi ý Lộ trình Cá nhân hóa{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card border-0 shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-id-card text-primary me-2"></i> Hồ sơ Học tập Sinh viên</h5>
+            <form method="GET" action="/sinh-vien" class="mb-3">
+                <label class="form-label small fw-bold text-muted">Chọn hoặc nhập mã sinh viên:</label>
+                <div class="input-group">
+                    <select name="ma_sv" class="form-select" onchange="this.form.submit()">
+                        {% for m in danh_sach_ma_sv %}
+                        <option value="{{ m }}" {% if m == sv.ma_sinh_vien %}selected{% endif %}>{{ m }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </form>
+
+            <div class="p-3 bg-light rounded mb-3">
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Họ và tên:</span>
+                    <strong class="text-dark">{{ sv.ho_ten }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Mã sinh viên:</span>
+                    <span class="badge bg-secondary">{{ sv.ma_sinh_vien }}</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Chuyên ngành:</span>
+                    <strong class="text-primary text-end">{{ sv.chuyen_nganh }}</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Điểm tích lũy (GPA):</span>
+                    <span class="fw-bold fs-5 text-success">{{ sv.diem_gpa }} / 4.0</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Điểm chuyên cần:</span>
+                    <strong>{{ sv.diem_chuyen_can }} / 10</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Điểm giữa kỳ:</span>
+                    <strong>{{ sv.diem_giua_ky }} / 10</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Điểm bài tập lớn/đồ án:</span>
+                    <strong>{{ sv.diem_do_an }} / 10</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Tỷ lệ điểm danh:</span>
+                    <strong>{{ sv.ty_le_diem_danh }}%</strong>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="text-muted small">Số lần tương tác LMS:</span>
+                    <strong>{{ sv.so_lan_tuong_tac_lms }} lượt</strong>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span class="text-muted small">Bài tập nộp đúng hạn:</span>
+                    <strong>{{ sv.so_bai_tap_nop_dung_han }} / 12</strong>
+                </div>
+            </div>
+
+            <div class="text-center p-3 border rounded">
+                <span class="text-muted small d-block mb-1">Kết quả Phân loại Mô hình AI (XGBoost)</span>
+                {% if ket_qua.trinh_do_du_doan == 'Xuất sắc' %}
+                <span class="badge-xuat-sac fs-6 d-inline-block mb-2"><i class="fa-solid fa-crown me-1"></i> Trình độ: Xuất sắc</span>
+                {% elif ket_qua.trinh_do_du_doan == 'Giỏi' %}
+                <span class="badge-gioi fs-6 d-inline-block mb-2"><i class="fa-solid fa-medal me-1"></i> Trình độ: Giỏi</span>
+                {% elif ket_qua.trinh_do_du_doan == 'Khá' %}
+                <span class="badge-kha fs-6 d-inline-block mb-2"><i class="fa-solid fa-thumbs-up me-1"></i> Trình độ: Khá</span>
+                {% elif ket_qua.trinh_do_du_doan == 'Trung bình' %}
+                <span class="badge-trung-binh fs-6 d-inline-block mb-2"><i class="fa-solid fa-triangle-exclamation me-1"></i> Trình độ: Trung bình</span>
+                {% else %}
+                <span class="badge-nguy-co fs-6 d-inline-block mb-2"><i class="fa-solid fa-circle-exclamation me-1"></i> Cảnh báo học vụ</span>
+                {% endif %}
+                <p class="small text-muted mb-0">Độ tin cậy dự đoán: <strong>{{ (ket_qua.xac_suat_du_doan * 100) | round(1) }}%</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="card border-0 shadow-sm p-4 mb-4">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-route text-success me-2"></i> Lộ trình Học tập Thích ứng Cá nhân hóa (Adaptive Learning Roadmap)</h5>
+            <p class="text-muted small mb-4">Lộ trình được tạo tự động bởi động cơ AI Recommender dựa trên phân tích tương quan giữa kết quả học tập và dữ liệu tương tác LMS.</p>
+
+            <div class="roadmap-card">
+                <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-book-bookmark me-2"></i> Môn học Tiên quyết & Củng cố Nền tảng</h6>
+                <p class="mb-0 text-dark">{{ ket_qua.lo_trinh.mon_hoc_tien_quyet }}</p>
+            </div>
+
+            <div class="roadmap-card" style="border-left-color: #0e9f6e;">
+                <h6 class="fw-bold text-success mb-2"><i class="fa-solid fa-graduation-cap me-2"></i> Khóa học Nâng cao & Hướng Chuyên sâu Đề xuất</h6>
+                <p class="mb-0 text-dark">{{ ket_qua.lo_trinh.mon_hoc_nang_cao }}</p>
+            </div>
+
+            <div class="roadmap-card" style="border-left-color: #f59e0b;">
+                <h6 class="fw-bold text-warning mb-2"><i class="fa-solid fa-lightbulb me-2"></i> Kỹ năng Cần Bổ trợ</h6>
+                <p class="mb-0 text-dark">{{ ket_qua.lo_trinh.ky_nang_can_bo_tro }}</p>
+            </div>
+
+            <div class="roadmap-card" style="border-left-color: #3b82f6;">
+                <h6 class="fw-bold text-info mb-2"><i class="fa-solid fa-clock me-2"></i> Thời gian Tự học Khuyến nghị</h6>
+                <p class="mb-0 text-dark"><strong>{{ ket_qua.lo_trinh.thoi_gian_hoc_khuyen_nghi }}</strong></p>
+            </div>
+
+            <div class="alert alert-info border-0 shadow-sm mb-0">
+                <h6 class="fw-bold text-primary mb-2"><i class="fa-solid fa-comment-dots me-2"></i> Lời khuyên Học tập từ Hệ thống AI & Cố vấn</h6>
+                <p class="mb-0 text-secondary">{{ ket_qua.lo_trinh.loi_khuyen_hoc_tap }}</p>
+            </div>
+        </div>
+
+        <div class="card border-0 shadow-sm p-4">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-sliders text-primary me-2"></i> Mô phỏng Thay đổi Chỉ số Học tập (What-If Simulation)</h5>
+            <p class="text-muted small mb-3">Thử nghiệm điều chỉnh số giờ học, số lần vào LMS để kiểm tra xem lộ trình và trình độ dự đoán sẽ cải thiện thế nào.</p>
+            
+            <form id="form-du-doan-sinh-vien">
+                <input type="hidden" id="input-ma-sv" value="{{ sv.ma_sinh_vien }}">
+                <input type="hidden" id="input-ho-ten" value="{{ sv.ho_ten }}">
+                <input type="hidden" id="input-chuyen-nganh" value="{{ sv.chuyen_nganh }}">
+                
+                <div class="row g-3 mb-3">
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Điểm GPA tích lũy</label>
+                        <input type="number" id="input-gpa" class="form-control" step="0.01" min="0" max="4.0" value="{{ sv.diem_gpa }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Điểm chuyên cần</label>
+                        <input type="number" id="input-chuyen-can" class="form-control" step="0.1" min="0" max="10" value="{{ sv.diem_chuyen_can }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Điểm giữa kỳ</label>
+                        <input type="number" id="input-giua-ky" class="form-control" step="0.1" min="0" max="10" value="{{ sv.diem_giua_ky }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Điểm đồ án/bài tập lớn</label>
+                        <input type="number" id="input-do-an" class="form-control" step="0.1" min="0" max="10" value="{{ sv.diem_do_an }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Số giờ học/tuần</label>
+                        <input type="number" id="input-so-gio" class="form-control" step="0.5" min="0" value="{{ sv.so_gio_hoc_tuan }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Tỷ lệ điểm danh (%)</label>
+                        <input type="number" id="input-diem-danh" class="form-control" step="0.1" min="0" max="100" value="{{ sv.ty_le_diem_danh }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Số lần tương tác LMS</label>
+                        <input type="number" id="input-lms" class="form-control" min="0" value="{{ sv.so_lan_tuong_tac_lms }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Bài tập nộp đúng hạn</label>
+                        <input type="number" id="input-bai-tap" class="form-control" min="0" max="12" value="{{ sv.so_bai_tap_nop_dung_han }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label small fw-bold">Câu hỏi trên diễn đàn</label>
+                        <input type="number" id="input-cau-hoi" class="form-control" min="0" value="{{ sv.so_cau_hoi_dien_dan }}" required>
+                    </div>
+                </div>
+
+                <button type="submit" id="nut-du-doan" class="btn btn-primary px-4 fw-bold">
+                    <i class="fa-solid fa-calculator me-2"></i> Phân tích và Gợi ý Lộ trình
+                </button>
+            </form>
+
+            <div id="ket-qua-khung" class="mt-4 p-3 bg-light border rounded d-none">
+                <h6 class="fw-bold text-success mb-3"><i class="fa-solid fa-circle-check me-2"></i> Kết quả Phân tích Mới:</h6>
+                <div class="row g-2 mb-2">
+                    <div class="col-md-4">Trình độ dự đoán: <strong id="ket-qua-trinh-do" class="text-primary"></strong></div>
+                    <div class="col-md-4">Độ tin cậy: <strong id="ket-qua-xac-suat"></strong></div>
+                    <div class="col-md-4">Cảnh báo: <strong id="ket-qua-nguy-co" class="text-danger"></strong></div>
+                </div>
+                <div class="p-2 bg-white rounded border mb-2 small">
+                    <strong>Môn học tiên quyết:</strong> <span id="ket-qua-tien-quyet"></span>
+                </div>
+                <div class="p-2 bg-white rounded border mb-2 small">
+                    <strong>Môn học nâng cao:</strong> <span id="ket-qua-nang-cao"></span>
+                </div>
+                <div class="p-2 bg-white rounded border mb-2 small">
+                    <strong>Kỹ năng bổ trợ:</strong> <span id="ket-qua-ky-nang"></span>
+                </div>
+                <div class="p-2 bg-white rounded border mb-2 small">
+                    <strong>Thời gian học khuyến nghị:</strong> <span id="ket-qua-thoi-gian"></span>
+                </div>
+                <div class="p-2 bg-white rounded border small">
+                    <strong>Lời khuyên:</strong> <span id="ket-qua-loi-khuyen"></span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

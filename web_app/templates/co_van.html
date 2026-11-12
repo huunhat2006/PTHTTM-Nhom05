@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Bảng Điều khiển Cố vấn Học tập - Quản lý Nguy cơ Học vụ{% endblock %}
+
+{% block content %}
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card card-stat p-3 bg-white">
+            <span class="text-muted small fw-bold text-uppercase">Sinh viên cần giám sát</span>
+            <h3 class="fw-bold text-danger my-1">{{ so_sv_canh_bao }}</h3>
+            <small class="text-danger fw-bold"><i class="fa-solid fa-triangle-exclamation me-1"></i> Tỷ lệ cảnh báo: {{ ty_le_canh_bao }}%</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-stat p-3 bg-white">
+            <span class="text-muted small fw-bold text-uppercase">Tổng sinh viên toàn khoa</span>
+            <h3 class="fw-bold text-primary my-1">{{ tong_sv }}</h3>
+            <small class="text-muted">Cập nhật tự động từ hệ thống LMS</small>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card card-stat p-3 bg-white">
+            <span class="text-muted small fw-bold text-uppercase">Mô hình AI bảo vệ</span>
+            <h3 class="fw-bold text-success my-1">XGBoost</h3>
+            <small class="text-success fw-bold"><i class="fa-solid fa-shield-halved me-1"></i> Phát hiện sớm trước 6 tuần</small>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h5 class="fw-bold mb-0 text-danger"><i class="fa-solid fa-triangle-exclamation me-2"></i> Danh sách Sinh viên Nguy cơ Cảnh báo Học vụ & Cần Can thiệp</h5>
+        <span class="badge bg-danger-subtle text-danger px-3 py-2 fw-bold">Ưu tiên xử lý cao</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table table-hover align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã SV</th>
+                    <th>Họ và tên</th>
+                    <th>Chuyên ngành</th>
+                    <th>GPA</th>
+                    <th>Chuyên cần</th>
+                    <th>Tương tác LMS</th>
+                    <th>Trình độ</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sv in danh_sach_canh_bao %}
+                <tr>
+                    <td><strong>{{ sv.ma_sinh_vien }}</strong></td>
+                    <td>{{ sv.ho_ten }}</td>
+                    <td><small>{{ sv.chuyen_nganh }}</small></td>
+                    <td><span class="badge bg-danger fs-6">{{ sv.diem_gpa }}</span></td>
+                    <td>{{ sv.diem_chuyen_can }}</td>
+                    <td>{{ sv.so_lan_tuong_tac_lms }} lượt</td>
+                    <td>
+                        {% if sv.trinh_do_hoc_tap == 'Nguy cơ cảnh báo' %}
+                        <span class="badge-nguy-co">Nguy cơ cảnh báo</span>
+                        {% else %}
+                        <span class="badge-trung-binh">Trung bình</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-danger me-1" onclick="moModalCoVan('{{ sv.ma_sinh_vien }}', '{{ sv.ho_ten }}')">
+                            <i class="fa-solid fa-envelope me-1"></i> Gửi nhắc nhở
+                        </button>
+                        <a href="/sinh-vien?ma_sv={{ sv.ma_sinh_vien }}" class="btn btn-sm btn-outline-primary">
+                            <i class="fa-solid fa-eye me-1"></i> Xem hồ sơ
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-list-check me-2 text-primary"></i> Toàn bộ Danh sách Sinh viên Theo dõi</h5>
+    <div class="table-responsive">
+        <table class="table table-striped align-middle">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã SV</th>
+                    <th>Họ và tên</th>
+                    <th>Chuyên ngành</th>
+                    <th>GPA</th>
+                    <th>Điểm danh</th>
+                    <th>Số giờ học/tuần</th>
+                    <th>Phân loại AI</th>
+                    <th>Chi tiết</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sv in toan_bo_sv %}
+                <tr>
+                    <td>{{ sv.ma_sinh_vien }}</td>
+                    <td><strong>{{ sv.ho_ten }}</strong></td>
+                    <td><small>{{ sv.chuyen_nganh }}</small></td>
+                    <td><strong>{{ sv.diem_gpa }}</strong></td>
+                    <td>{{ sv.ty_le_diem_danh }}%</td>
+                    <td>{{ sv.so_gio_hoc_tuan }}h</td>
+                    <td>
+                        {% if sv.trinh_do_hoc_tap == 'Xuất sắc' %}
+                        <span class="badge-xuat-sac">Xuất sắc</span>
+                        {% elif sv.trinh_do_hoc_tap == 'Giỏi' %}
+                        <span class="badge-gioi">Giỏi</span>
+                        {% elif sv.trinh_do_hoc_tap == 'Khá' %}
+                        <span class="badge-kha">Khá</span>
+                        {% elif sv.trinh_do_hoc_tap == 'Trung bình' %}
+                        <span class="badge-trung-binh">Trung bình</span>
+                        {% else %}
+                        <span class="badge-nguy-co">Nguy cơ cảnh báo</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <a href="/sinh-vien?ma_sv={{ sv.ma_sinh_vien }}" class="btn btn-sm btn-outline-secondary">
+                            <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="modal fade" id="modalCoVan" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form id="form-gui-co-van">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold text-dark"><i class="fa-solid fa-paper-plane text-primary me-2"></i> Phiếu Nhắc nhở Cố vấn Học tập</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="co-van-ma-sv">
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Sinh viên tiếp nhận:</label>
+                        <p id="co-van-ten-sv-hien-thi" class="form-control-plaintext fw-bold text-primary"></p>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Họ tên Cố vấn học tập:</label>
+                        <input type="text" id="co-van-ten" class="form-control" value="TS. Nguyễn Văn Cố Vấn" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Hình thức hỗ trợ:</label>
+                        <select id="co-van-hinh-thuc" class="form-select">
+                            <option value="Gửi email nhắc nhở học vụ">Gửi email nhắc nhở học vụ</option>
+                            <option value="Hẹn gặp trực tiếp tại văn phòng khoa">Hẹn gặp trực tiếp tại văn phòng khoa</option>
+                            <option value="Liên hệ gia đình sinh viên">Liên hệ gia đình sinh viên</option>
+                            <option value="Bố trí sinh viên khá giỏi hỗ trợ kèm cặp">Bố trí sinh viên khá giỏi hỗ trợ kèm cặp</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nội dung trao đổi / Lời khuyên cụ thể:</label>
+                        <textarea id="co-van-noi-dung" class="form-control" rows="4" placeholder="Nhập hướng dẫn cải thiện điểm danh và tiến độ bài tập..." required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Đóng</button>
+                    <button type="submit" class="btn btn-primary fw-bold">Xác nhận Lưu và Gửi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,181 @@
+{% extends "base.html" %}
+
+{% block title %}Nghiên cứu Mô hình Thông minh CLO1 - So sánh Mô hình{% endblock %}
+
+{% block content %}
+<div class="card border-0 shadow-sm p-4 mb-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <h4 class="fw-bold mb-1 text-primary"><i class="fa-solid fa-brain me-2"></i> Báo cáo So sánh Thực nghiệm Mô hình Trí tuệ Nhân tạo (CLO1)</h4>
+            <p class="text-muted small mb-0">Thực hiện so sánh đa chỉ số giữa 3 phương pháp: Cây quyết định (Decision Tree), Thuật toán tăng cường Gradient (XGBoost), và Mô hình kết hợp phân cụm (K-Means + Phân loại).</p>
+        </div>
+        <div>
+            <span class="badge bg-success-subtle text-success border border-success px-3 py-2 fw-bold fs-6">
+                <i class="fa-solid fa-trophy me-1"></i> Mô hình chiến thắng: {{ so_sanh.mo_hinh_tot_nhat }}
+            </span>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover align-middle text-center">
+            <thead class="table-dark">
+                <tr>
+                    <th class="text-start">Mô hình thực nghiệm</th>
+                    <th>Độ chính xác (Accuracy)</th>
+                    <th>Precision (Độ chuẩn xác)</th>
+                    <th>Recall (Độ bao phủ)</th>
+                    <th>F1-Score (F-điểm)</th>
+                    <th>Thời gian huấn luyện</th>
+                    <th>Độ trễ suy luận (ms/mẫu)</th>
+                    <th>Đánh giá tổng thể</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for ten, kq in so_sanh.ket_qua_chi_tiet.items() %}
+                <tr {% if ten == so_sanh.mo_hinh_tot_nhat %}class="table-success fw-bold"{% endif %}>
+                    <td class="text-start">
+                        <strong>{{ ten }}</strong>
+                        {% if ten == so_sanh.mo_hinh_tot_nhat %}
+                        <span class="badge bg-success ms-2">Được chọn triển khai MLOps</span>
+                        {% endif %}
+                    </td>
+                    <td>{{ (kq.do_chinh_xac * 100) | round(2) }}%</td>
+                    <td>{{ (kq.precision * 100) | round(2) }}%</td>
+                    <td>{{ (kq.recall * 100) | round(2) }}%</td>
+                    <td class="text-primary fs-5">{{ (kq.f1_score * 100) | round(2) }}%</td>
+                    <td>{{ kq.thoi_gian_huan_luyen_giay }} s</td>
+                    <td>{{ kq.do_tre_suy_luan_ms }} ms</td>
+                    <td>
+                        {% if 'XGBoost' in ten %}
+                        <span class="badge bg-success">Tối ưu nhất</span>
+                        {% elif 'Decision Tree' in ten %}
+                        <span class="badge bg-secondary">Dễ diễn giải</span>
+                        {% else %}
+                        <span class="badge bg-info text-dark">Phát hiện cụm ẩn</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-chart-column text-primary me-2"></i> Tầm quan trọng của Đặc trưng (Feature Importance - XGBoost)</h5>
+            <p class="text-muted small">Mức độ đóng góp của từng đặc trưng giáo dục trong quyết định phân loại trình độ học tập của sinh viên.</p>
+            <div style="position: relative; height: 320px;">
+                <canvas id="bieuDoDacTrung"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm p-4 h-100">
+            <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-table-cells text-success me-2"></i> Ma trận Nhầm lẫn (Confusion Matrix - XGBoost)</h5>
+            <p class="text-muted small">Đánh giá khả năng phân loại chính xác trên 5 lớp trình độ của tập dữ liệu kiểm thử độc lập.</p>
+            <div class="table-responsive">
+                <table class="table table-bordered table-sm text-center align-middle">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Thực tế \ Dự đoán</th>
+                            <th>Nguy cơ</th>
+                            <th>Trung bình</th>
+                            <th>Khá</th>
+                            <th>Giỏi</th>
+                            <th>Xuất sắc</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in danh_gia.ma_tran_nham_lan_xgboost %}
+                        <tr>
+                            <th class="table-light text-start">{{ danh_gia.nhan_lop[loop.index0] }}</th>
+                            {% for val in row %}
+                            <td {% if loop.index0 == loop.parent.loop.index0 %}class="bg-success text-white fw-bold"{% elif val > 0 %}class="bg-warning-subtle"{% endif %}>
+                                {{ val }}
+                            </td>
+                            {% endfor %}
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="alert alert-success border-0 small mt-3 mb-0">
+                <i class="fa-solid fa-circle-check me-1"></i> Mô hình XGBoost không có trường hợp nào bỏ sót sinh viên thuộc nhóm nguy cơ cảnh báo học vụ sang nhóm khá/giỏi (Recall lớp Nguy cơ đạt 100%).
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm p-4">
+    <h5 class="fw-bold mb-3 text-dark"><i class="fa-solid fa-diagram-project text-primary me-2"></i> Quy trình MLOps Khép kín Đã Hiện thực Hóa</h5>
+    <div class="row g-3 text-center">
+        <div class="col-md-2">
+            <div class="p-3 border rounded bg-light h-100">
+                <div class="text-primary fs-3 mb-2"><i class="fa-solid fa-database"></i></div>
+                <h6 class="fw-bold small mb-1">1. Thu thập & Nạp dữ liệu</h6>
+                <p class="text-muted small mb-0">Nạp từ PostgreSQL & LMS Logs</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-3 border rounded bg-light h-100">
+                <div class="text-info fs-3 mb-2"><i class="fa-solid fa-filter"></i></div>
+                <h6 class="fw-bold small mb-1">2. Tiền xử lý & Chuẩn hóa</h6>
+                <p class="text-muted small mb-0">StandardScaler & LabelMapping</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light h-100">
+                <div class="text-warning fs-3 mb-2"><i class="fa-solid fa-brain"></i></div>
+                <h6 class="fw-bold small mb-1">3. Huấn luyện Đa mô hình</h6>
+                <p class="text-muted small mb-0">Decision Tree, XGBoost, K-Means</p>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="p-3 border rounded bg-light h-100">
+                <div class="text-danger fs-3 mb-2"><i class="fa-solid fa-shield-virus"></i></div>
+                <h6 class="fw-bold small mb-1">4. Model Gatekeeper (CI/CD)</h6>
+                <p class="text-muted small mb-0">Kiểm tra F1-score >= 0.85</p>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="p-3 border rounded bg-light h-100">
+                <div class="text-success fs-3 mb-2"><i class="fa-solid fa-server"></i></div>
+                <h6 class="fw-bold small mb-1">5. Deploy Docker Swarm</h6>
+                <p class="text-muted small mb-0">Auto-scale & Zero Downtime</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+const ctxDacTrung = document.getElementById('bieuDoDacTrung').getContext('2d');
+new Chart(ctxDacTrung, {
+    type: 'bar',
+    data: {
+        labels: {{ danh_gia.dac_trung | tojson }},
+        datasets: [{
+            label: 'Độ quan trọng đặc trưng (XGBoost)',
+            data: {{ danh_gia.tam_quan_trong_xgboost | tojson }},
+            backgroundColor: '#1a56db',
+            borderRadius: 6
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: { display: false }
+        },
+        scales: {
+            x: { beginAtZero: true }
+        }
+    }
+});
+</script>
+{% endblock %}
+

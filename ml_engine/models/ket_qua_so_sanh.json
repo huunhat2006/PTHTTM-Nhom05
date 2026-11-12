@@ -1,0 +1,43 @@
+{
+  "so_luong_mau_huan_luyen": 1200,
+  "so_luong_mau_kiem_thu": 300,
+  "danh_sach_dac_trung": [
+    "diem_gpa",
+    "diem_chuyen_can",
+    "diem_giua_ky",
+    "diem_do_an",
+    "so_gio_hoc_tuan",
+    "ty_le_diem_danh",
+    "so_lan_tuong_tac_lms",
+    "so_bai_tap_nop_dung_han",
+    "so_cau_hoi_dien_dan"
+  ],
+  "ket_qua_chi_tiet": {
+    "Decision Tree (Cây quyết định)": {
+      "do_chinh_xac": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "thoi_gian_huan_luyen_giay": 0.2447,
+      "do_tre_suy_luan_ms": 0.0062
+    },
+    "XGBoost (Extreme Gradient Boosting)": {
+      "do_chinh_xac": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "thoi_gian_huan_luyen_giay": 0.7404,
+      "do_tre_suy_luan_ms": 0.0344
+    },
+    "K-Means + Classification (Phân cụm kết hợp Phân loại)": {
+      "do_chinh_xac": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "thoi_gian_huan_luyen_giay": 0.6317,
+      "do_tre_suy_luan_ms": 0.2046
+    }
+  },
+  "mo_hinh_tot_nhat": "Decision Tree (Cây quyết định)",
+  "chi_so_f1_cao_nhat": 1.0
+}
